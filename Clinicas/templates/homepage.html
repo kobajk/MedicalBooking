@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clínica</title>
+</head>
+<body>
+    <h1>Clínica</h1>
+    <p>Seja bem-vindo à clínica!</p>
+    <p>Escolha uma opção no menu acima.</p>
+
+    {% block formulario %}
+    <form method="POST">
+    {{ form.csrf_token }}
+
+        {{ form.email.label() }}  
+        {{ form.email() }}
+        
+        {{ form.senha.label() }}
+        {{ form.senha() }}
+
+        {{ form.submit() }}
+    </form>
+    {% endblock %}
+</body>
+</html>
