@@ -6,9 +6,30 @@
     <title>Perfil</title>
 </head>
 <body>
-    <h1>{{ usuario }}</h1>
+    <h1>{{ usuario.username }}</h1>
     <p>Bem-vindo ao seu perfil!</p>
     <p>Escolha uma opção no menu acima para gerenciar suas informações.</p>
-    <a href="{{ url_for('homepage') }}"><button>Sair</button></a>
+    <a href="{{ url_for('logout') }}"><button>Sair</button></a>
+
+    {% if form %}
+        <form enctype="multipart/form-data" method="POST">
+            {{ form.csrf_token }}
+            {{ form.foto() }}
+            {{ form.submit() }}
+
+        
+        </form>  
+    {% endif %}
+
+     
+    
+    
+    
+    {% for foto in usuario.fotos %}
+        <img src="{{ url_for('static', filename='fotos_post/{}'.format(foto.imagem)) }}" >
+
+    {% endfor %}
+    
+
 </body>
 </html>

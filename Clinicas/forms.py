@@ -1,7 +1,7 @@
 #%%
 # Create forms for the application (input)
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, FileField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
 from Clinicas.models import Usuario
 
@@ -23,7 +23,9 @@ class Form_Criar_Conta(FlaskForm):
         if usuario:
             raise ValidationError('Este email já está em uso. Por favor, escolha outro.')
 
-
+class Form_Foto(FlaskForm):
+    foto = FileField('Foto', validators=[DataRequired()])
+    submit = SubmitField('Enviar')
 
 
 

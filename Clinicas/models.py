@@ -14,12 +14,12 @@ class Usuario(database.Model, UserMixin):
     username = database.Column(database.String(80), nullable=False)
     email = database.Column(database.String(120), unique=True, nullable=False)
     senha = database.Column(database.String(80), nullable=False)
-    foto = database.relationship('Foto', backref='usuario', lazy=True)
+    fotos = database.relationship('Foto', backref='usuario', lazy=True)
 
 
 class Foto(database.Model):
     id = database.Column(database.Integer, primary_key=True)
-    imagem = database.Column(database.String(80), default='default.png')
+    imagem = database.Column(database.String, default='default.png')
     data_criacao = database.Column(database.DateTime, nullable=False, default=datetime.utcnow())
     id_usuario = database.Column(database.Integer, database.ForeignKey('usuario.id'), nullable=False) # foreign key from Usuario table
 
