@@ -1,27 +1,38 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clínica</title>
+    <title>Login</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/styles.css') }}">
 </head>
 <body>
-    <h1>Clínica</h1>
-    <p>Seja bem-vindo à clínica!</p>
-    <p>Escolha uma opção no menu acima.</p>
-
-    {% block formulario %}
-    <form method="POST">
-    {{ form.csrf_token }}
-
-        {{ form.email.label() }}  
-        {{ form.email() }}
+    <form method="POST" action="{{ url_for('homepage') }}">
+        {{ form.csrf_token }}
+        <h1>Login</h1>
         
-        {{ form.senha.label() }}
-        {{ form.senha() }}
-
-        {{ form.submit() }}
+        <div>
+            {{ form.email(class="form-control", placeholder="Email") }}
+        </div>
+        
+        <div id="password-field" style="display: none;">
+            {{ form.senha(class="form-control", placeholder="Senha") }}
+        </div>
+        
+        <div>
+            {{ form.submit(class="custom-submit-button") }}
+        </div>
     </form>
-    {% endblock %}
+    <script>
+        document.getElementById('email').addEventListener('input', function() {
+            var email = this.value;
+            var passwordField = document.getElementById('password-field');
+            if (email) {
+                passwordField.style.display = 'block';
+            } else {
+                passwordField.style.display = 'none';
+            }
+        });
+    </script>
 </body>
 </html>
