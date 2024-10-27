@@ -169,3 +169,70 @@ body {
         font-size: 16px;
     }
 }
+
+.profile-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+.profile-title {
+    font-size: 32px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #1d1d1f;
+    text-align: center;
+}
+
+.profile-subtitle {
+    font-size: 18px;
+    color: #86868b;
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.profile-menu {
+    margin-bottom: 32px;
+    text-align: center;
+}
+
+.profile-form {
+    margin-bottom: 32px;
+}
+
+.photo-gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 32px;
+}
+
+.photo-item {
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.profile-photo {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.logout-container {
+    text-align: center;
+}
+
+.logout-button {
+    display: inline-block;
+    padding: 12px 24px;
+    background-color: #ff3b30;
+    color: #ffffff;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: background-color 0.3s ease;
+}
+
+.logout-button:hover {
+    background-color: #d70015;
+}
