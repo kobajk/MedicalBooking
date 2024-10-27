@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Criar conta - MedicalBooking{% endblock %}
+{% block content %}
+<form method="POST" class="login-form">
+    {{ form.csrf_token }}
+    <h1 class="login-title">MedicalBooking</h1>
+    <p class="login-subtitle">Crie sua conta para começar</p>
+    
+    <div class="input-group">
+        {{ form.email(class="form-control", placeholder=" ", autocomplete="email") }}
+        <label class="floating-label" for="email">Email</label>
+    </div>
+    
+    <div class="input-group">
+        {{ form.username(class="form-control", placeholder=" ", autocomplete="username") }}
+        <label class="floating-label" for="username">Nome de usuário</label>
+    </div>
+
+    <div class="input-group">
+        {{ form.senha(class="form-control", placeholder=" ", autocomplete="new-password") }}
+        <label class="floating-label" for="senha">Senha</label>
+    </div>
+    
+    <div class="input-group">
+        {{ form.confirmar_senha(class="form-control", placeholder=" ", autocomplete="new-password") }}
+        <label class="floating-label" for="confirmar_senha">Confirmar senha</label>
+    </div>
+
+    <div class="input-group">
+        {{ form.submit(class="custom-submit-button", value="Criar conta") }}
+    </div>
+
+    <p class="create-account">
+        Já tem uma conta? <a href="{{ url_for('homepage') }}">Faça login aqui.</a>
+    </p>
+</form>
+{% endblock %}
