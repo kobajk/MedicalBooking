@@ -1,6 +1,6 @@
 #%%
 # Create the routes for the application (links)
-from flask import render_template, url_for, redirect
+from flask import render_template, url_for, redirect, flash
 from flask_login import login_required, login_user, logout_user, current_user
 from Clinicas import App, database, bcrypt
 from Clinicas.forms import Login_Form, Form_Criar_Conta, Form_Foto
@@ -17,8 +17,10 @@ def homepage():
         usuario = Usuario.query.filter_by(email=form_login.email.data).first()
 
         if usuario and bcrypt.check_password_hash(usuario.senha, form_login.senha.data):
-            login_user(usuario, remember=True)
+            login_user(usuario, remember=form_login.lembrar.data)
             return redirect(url_for('perfil', id_usuario=usuario.id))
+        else:
+            flash('Email ou senha incorretos', 'danger')
 
     return render_template('homepage.html', form=form_login)
 

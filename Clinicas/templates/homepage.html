@@ -1,53 +1,47 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - MedicalBooking</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles/styles.css') }}">
-</head>
-<body>
-    <div class="login-container">
-        <form method="POST" action="{{ url_for('homepage') }}" class="login-form">
-            {{ form.csrf_token }}
-            <h1 class="login-title">MedicalBooking</h1>
-            <p class="login-subtitle">Inicie a sessão para continuar</p>
-            
-            <div class="input-group">
-                {{ form.email(class="form-control", placeholder="Email", autocomplete="username") }}
-            </div>
-            
-            <div id="password-field" class="input-group" style="display: none;">
-                {{ form.senha(class="form-control", placeholder="Senha", autocomplete="current-password") }}
-            </div>
+{% extends "base.html" %}
 
-            <div class="input-group remember-forgot">
-                <label class="remember-label">
-                    <input type="checkbox" name="remember" id="remember">
-                    <span>Lembrar</span>
-                </label>
-                <a href="#" class="forgot-password">Esqueceu a senha?</a>
-            </div>
-            
-            <div class="input-group">
-                {{ form.submit(class="custom-submit-button", value="Continuar") }}
-            </div>
+{% block title %}Login - MedicalBooking{% endblock %}
 
-            <p class="create-account">
-                Não tem uma MedicalBooking? <a href="#">Crie o seu agora.</a>
-            </p>
-        </form>
+{% block content %}
+<form method="POST" action="{{ url_for('homepage') }}" class="login-form">
+    {{ form.csrf_token }}
+    <h1 class="login-title">MedicalBooking</h1>
+    <p class="login-subtitle">Inicie a sessão para continuar</p>
+    
+    <div class="input-group">
+        {{ form.email(class="form-control", placeholder="Email", autocomplete="username") }}
     </div>
-    <script>
-        document.getElementById('email').addEventListener('input', function() {
-            var email = this.value;
-            var passwordField = document.getElementById('password-field');
-            if (email) {
-                passwordField.style.display = 'block';
-            } else {
-                passwordField.style.display = 'none';
-            }
-        });
-    </script>
-</body>
-</html>
+    
+    <div id="password-field" class="input-group" style="display: none;">
+        {{ form.senha(class="form-control", placeholder="Senha", autocomplete="current-password") }}
+    </div>
+
+    <div class="input-group remember-forgot">
+        <label class="remember-label">
+            <input type="checkbox" name="remember" id="remember">
+            <span>Lembrar</span>
+        </label>
+        <a href="#" class="forgot-password">Esqueceu a senha?</a>
+    </div>
+    
+    <div class="input-group">
+        {{ form.submit(class="custom-submit-button", value="Continuar") }}
+    </div>
+
+    <p class="create-account">
+        Não tem uma MedicalBooking? <a href="{{ url_for('criar_conta') }}">Crie o seu agora.</a>
+    </p>
+</form>
+
+<script>
+    document.getElementById('email').addEventListener('input', function() {
+        var email = this.value;
+        var passwordField = document.getElementById('password-field');
+        if (email) {
+            passwordField.style.display = 'block';
+        } else {
+            passwordField.style.display = 'none';
+        }
+    });
+</script>
+{% endblock %}

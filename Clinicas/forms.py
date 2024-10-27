@@ -8,8 +8,8 @@ from Clinicas.models import Usuario
 class Login_Form(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Email()])
     senha = PasswordField('Senha', validators=[DataRequired()])
-    # lembrar = BooleanField('Lembrar de mim', default=False)
-    submit = SubmitField('Login')
+    lembrar = BooleanField('Lembrar de mim', default=False)
+    submit = SubmitField('Continuar')
 
 class Form_Criar_Conta(FlaskForm):
     username = StringField('Nome de usuário', validators=[DataRequired(), Length(min=2, max=40)])

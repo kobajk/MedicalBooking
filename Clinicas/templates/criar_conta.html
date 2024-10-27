@@ -1,26 +1,35 @@
-{% extends "homepage.html" %}
+{% extends "base.html" %}
 
-{% block titulo %}
+{% block title %}Criar conta - MedicalBooking{% endblock %}
 
-    Criar conta
-    {% endblock %}
-
-    {% block formulario %}
-    <form method="POST">
+{% block content %}
+<form method="POST" class="login-form">
     {{ form.csrf_token }}
+    <h1 class="login-title">MedicalBooking</h1>
+    <p class="login-subtitle">Crie sua conta para começar</p>
+    
+    <div class="input-group">
+        {{ form.email(class="form-control", placeholder="Email", autocomplete="email") }}
+    </div>
+    
+    <div class="input-group">
+        {{ form.username(class="form-control", placeholder="Nome de usuário", autocomplete="username") }}
+    </div>
 
-        {{ form.email.label() }}  
-        {{ form.email() }}
-        
-        {{ form.username.label() }}  
-        {{ form.username() }}
+    <div class="input-group">
+        {{ form.senha(class="form-control", placeholder="Senha", autocomplete="new-password") }}
+    </div>
+    
+    <div class="input-group">
+        {{ form.confirmar_senha(class="form-control", placeholder="Confirmar senha", autocomplete="new-password") }}
+    </div>
 
-        {{ form.senha.label() }}
-        {{ form.senha() }}
-        
-        {{ form.confirmar_senha.label() }}
-        {{ form.confirmar_senha() }}
+    <div class="input-group">
+        {{ form.submit(class="custom-submit-button", value="Criar conta") }}
+    </div>
 
-        {{ form.submit() }}
-    </form>
-    {% endblock %}
+    <p class="create-account">
+        Já tem uma conta? <a href="{{ url_for('homepage') }}">Faça login aqui.</a>
+    </p>
+</form>
+{% endblock %}
