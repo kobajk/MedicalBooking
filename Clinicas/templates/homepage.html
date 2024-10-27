@@ -9,11 +9,13 @@
     <p class="login-subtitle">Inicie a sessão para continuar</p>
     
     <div class="input-group">
-        {{ form.email(class="form-control", placeholder="Email", autocomplete="username") }}
+        {{ form.email(class="form-control", id="email", required=true, placeholder=" ") }}
+        <label for="email" class="floating-label">Email</label>
     </div>
     
     <div id="password-field" class="input-group" style="display: none;">
-        {{ form.senha(class="form-control", placeholder="Senha", autocomplete="current-password") }}
+        {{ form.senha(class="form-control", id="senha", required=true, placeholder=" ") }}
+        <label for="senha" class="floating-label">Senha</label>
     </div>
 
     <div class="input-group remember-forgot">

@@ -1,7 +1,5 @@
 {% extends "base.html" %}
-
 {% block title %}Criar conta - MedicalBooking{% endblock %}
-
 {% block content %}
 <form method="POST" class="login-form">
     {{ form.csrf_token }}
@@ -9,19 +7,23 @@
     <p class="login-subtitle">Crie sua conta para começar</p>
     
     <div class="input-group">
-        {{ form.email(class="form-control", placeholder="Email", autocomplete="email") }}
+        {{ form.email(class="form-control", placeholder=" ", autocomplete="email") }}
+        <label class="floating-label" for="email">Email</label>
     </div>
     
     <div class="input-group">
-        {{ form.username(class="form-control", placeholder="Nome de usuário", autocomplete="username") }}
+        {{ form.username(class="form-control", placeholder=" ", autocomplete="username") }}
+        <label class="floating-label" for="username">Nome de usuário</label>
     </div>
 
     <div class="input-group">
-        {{ form.senha(class="form-control", placeholder="Senha", autocomplete="new-password") }}
+        {{ form.senha(class="form-control", placeholder=" ", autocomplete="new-password") }}
+        <label class="floating-label" for="senha">Senha</label>
     </div>
     
     <div class="input-group">
-        {{ form.confirmar_senha(class="form-control", placeholder="Confirmar senha", autocomplete="new-password") }}
+        {{ form.confirmar_senha(class="form-control", placeholder=" ", autocomplete="new-password") }}
+        <label class="floating-label" for="confirmar_senha">Confirmar senha</label>
     </div>
 
     <div class="input-group">
