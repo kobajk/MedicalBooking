@@ -1,9 +1,9 @@
 #%%
 # Create the routes for the application (links)
-from flask import render_template, url_for, redirect, flash
+from flask import render_template, url_for, redirect, flash, request
 from flask_login import login_required, login_user, logout_user, current_user
 from Clinicas import App, database, bcrypt
-from Clinicas.forms import Login_Form, Form_Criar_Conta, Form_Foto
+from Clinicas.forms import Login_Form, Form_Criar_Conta, Form_Foto, Form_Atualizar_Perfil
 from Clinicas.models import Usuario, Foto
 import os
 from werkzeug.utils import secure_filename
@@ -74,6 +74,47 @@ def perfil(id_usuario):
         usuario = Usuario.query.get(int(id_usuario))
         return render_template('perfil.html', usuario=usuario, form=None)
 
+@App.route("/compartilhar_dados", methods = ["POST"])
+def compartilhar_dados():
+    if not current_user.is_autheticated:
+        return redirect(url_for("homepage"))
+    
+    usuario = Usuario.query.get(current_user.id)
+    if not usuario.consentimento:
+        flash("Você não deu consentimento para compartilhar os seus dados.", "danger")
+        return redirect(url_for("perfil", id_usuario = current_user.id))
+    
+    flash("Seus dados foram compartilhados com sucesso.", "success")
+    return redirect(url_for("perfil", id_usuario = current_user.id))
+
+@App.route("/acessar_dados", methods = ["GET"])
+@login_required
+def acessar_dados():
+    usuario = Usuario.query.get(current_user.id)
+    return render_template("acessar_dados.html", usuario = usuario)
+
+@App.route("/excluir_conta", methods = ["POST"])
+@login_required
+def excluir_conta():
+    usuario = Usuario.query.get(current_user.id)
+    database.session.delete(usuario)
+    database.session.commit()
+    flash("Sua conta foi excluída com sucesso.", "success")
+    return redirect(url_for("homepage"))
+
+@App.route("/atualizar_perfil", methods = ["GET", "POST"])
+@login_required
+def atualizar_perfil():
+    form = Form_Atualizar_Perfil()
+    if form.validate_on_submit():
+        current_user.username = form.username.data
+        current_user.email = form.email.data
+        database.session.commit()
+        flash("Seu perfil foi atualizado com sucesso.", "success")
+        return redirect(url_for("perfil", id_usuario = current_user.id))
+    elif request.method == "GET":
+        form.username.data = current_user.username
+        form.email.data = current_user.email
 
 @App.route('/logout')
 @login_required
