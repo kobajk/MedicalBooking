@@ -34,9 +34,21 @@ def criar_conta():
 
         senha_criptogarfada  = bcrypt.generate_password_hash(form_criar_conta.senha.data).decode('utf-8')
 
+        # Ajusta `crm` e `especialidade` para `None` se o tipo for "Paciente"
+        if form_criar_conta.tipo.data == "Médico":
+            crm = form_criar_conta.crm.data
+            especialidade = form_criar_conta.especialidade.data
+        else:
+            crm = None
+            especialidade = None
+
         usuario = Usuario(username=form_criar_conta.username.data,
-                       email=form_criar_conta.email.data,
-                       senha=senha_criptogarfada
+                        email=form_criar_conta.email.data,
+                        senha=senha_criptogarfada,
+                        tipo=form_criar_conta.tipo.data,
+                        especialidade=especialidade,
+                        crm=crm,
+                        telefone=form_criar_conta.telefone.data
                        )
         
         database.session.add(usuario)

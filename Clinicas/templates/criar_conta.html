@@ -27,6 +27,26 @@
     </div>
 
     <div class="input-group">
+        {{ form.tipo(class="form-control", placeholder=" ") }}
+        <label class="floating-label" for="tipo">Tipo (Médico ou Paciente)</label>
+    </div>
+
+    <div class="input-group">
+        {{ form.especialidade(class="form-control", placeholder=" ") }}
+        <label class="floating-label" for="especialidade">Especialidade</label>
+    </div>
+
+    <div class="input-group">
+        {{ form.crm(class="form-control", placeholder=" ") }}
+        <label class="floating-label" for="crm">CRM</label>
+    </div>
+
+    <div class="input-group">
+        {{ form.telefone(class="form-control", placeholder=" ", autocomplete="tel") }}
+        <label class="floating-label" for="telefone">Telefone</label>
+    </div>
+
+    <div class="input-group">
         {{ form.submit(class="custom-submit-button", value="Criar conta") }}
     </div>
 
