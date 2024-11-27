@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}Minhas Consultas - MedicalBooking{% endblock %}
+
+{% block content %}
+<div class="consultas-container">
+    <h1 class="profile-title">Minhas Consultas</h1>
+    
+    <!-- Botão para voltar ao perfil -->
+    <a href="{{ url_for('perfil', id_usuario=current_user.id) }}" class="custom-submit-button">Voltar ao Perfil</a>
+
+    {% if consultas %}
+    <div class="consultas-list">
+        {% for consulta in consultas %}
+        <div class="consulta-item">
+            <p><strong>Data e Hora:</strong> {{ consulta.data_hora.strftime('%d/%m/%Y %H:%M') }}</p>
+            <p><strong>Profissional:</strong> {{ consulta.profissional.username }}</p>
+            <p><strong>Status:</strong> {{ consulta.status }}</p>
+            <p><strong>Observações:</strong> {{ consulta.observacoes }}</p>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p>Você não tem consultas agendadas.</p>
+    {% endif %}
+</div>
+{% endblock %}

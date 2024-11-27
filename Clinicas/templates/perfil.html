@@ -9,7 +9,14 @@
     
     <div class="profile-menu">
         <p>Escolha uma opção no menu abaixo para gerenciar suas informações.</p>
-        <!-- Add menu options here -->
+        {% if usuario.tipo == 'Médico' %}
+        <a href="{{ url_for('consultas_agendadas') }}" class="custom-submit-button">Consultas Agendadas Comigo</a>
+        {% else %}
+        <a href="{{ url_for('agendar_consulta') }}" class="custom-submit-button">Agendar Consulta</a>
+        <a href="{{ url_for('prontuario', id_usuario=usuario.id) }}" class="custom-submit-button">Prontuários</a>
+        <a href="{{ url_for('minhas_consultas') }}" class="custom-submit-button">Minhas Consultas</a>
+        {% endif %}
+        <a href="{{ url_for('editar_conta') }}" class="custom-submit-button">Editar Conta</a>
     </div>
 
     {% if form %}
@@ -38,3 +45,4 @@
     </div>
 </div>
 {% endblock %}
+

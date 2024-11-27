@@ -7,27 +7,36 @@
 
 body {
     font-family: 'San Francisco', -apple-system, BlinkMacSystemFont, sans-serif;
-    background-color: #ffffff;
+    background-color: #f5f5f7;
     display: flex;
     justify-content: center;
-    align-items: center;
-    height: 100vh;
+    align-items: flex-start;
+    min-height: 100vh;
     margin: 0;
     color: #1d1d1f;
+    padding: 20px;
+    box-sizing: border-box;
 }
 
 .error-message {
-    color: red;
-    display: none; /* Inicialmente escondido */
+    color: #ff3b30;
+    display: none; /* Initially hidden */
+    margin-bottom: 16px;
+    text-align: center;
 }
 
-.login-container {
+.login-container, .profile-container, .consultas-container, .prontuario-container, .edit-account-container {
     width: 100%;
-    max-width: 400px;
-    padding: 40px 20px;
+    max-width: 600px;
+    padding: 40px;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin: 20px auto;
+    box-sizing: border-box;
 }
 
-.login-title {
+.login-title, .profile-title {
     font-size: 32px;
     font-weight: 600;
     margin-bottom: 8px;
@@ -35,8 +44,8 @@ body {
     text-align: center;
 }
 
-.login-subtitle {
-    font-size: 16px;
+.login-subtitle, .profile-subtitle {
+    font-size: 18px;
     color: #86868b;
     text-align: center;
     margin-bottom: 32px;
@@ -97,6 +106,10 @@ body {
     cursor: pointer;
     transition: all 0.3s ease;
     box-sizing: border-box;
+    text-align: center;
+    text-decoration: none;
+    display: block;
+    margin-bottom: 16px;
 }
 
 .custom-submit-button:hover {
@@ -151,49 +164,17 @@ body {
     color: #0077ed;
 }
 
-@media (max-width: 480px) {
-    .login-container {
-        padding: 20px;
-    }
-
-    .login-title {
-        font-size: 28px;
-    }
-
-    .login-subtitle {
-        font-size: 14px;
-    }
-
-    .form-control,
-    .custom-submit-button {
-        font-size: 16px;
-    }
-}
-
-.profile-container {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 40px 20px;
-}
-
-.profile-title {
-    font-size: 32px;
-    font-weight: 600;
-    margin-bottom: 8px;
-    color: #1d1d1f;
-    text-align: center;
-}
-
-.profile-subtitle {
-    font-size: 18px;
-    color: #86868b;
-    text-align: center;
-    margin-bottom: 32px;
-}
-
 .profile-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
     margin-bottom: 32px;
+}
+
+.profile-menu p {
     text-align: center;
+    color: #1d1d1f;
+    margin-bottom: 15px;
 }
 
 .profile-form {
@@ -202,7 +183,7 @@ body {
 
 .photo-gallery {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
     gap: 16px;
     margin-bottom: 32px;
 }
@@ -211,28 +192,68 @@ body {
     border-radius: 8px;
     overflow: hidden;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    aspect-ratio: 1;
 }
 
 .profile-photo {
     width: 100%;
-    height: auto;
+    height: 100%;
+    object-fit: cover;
     display: block;
 }
 
 .logout-container {
     text-align: center;
+    margin-top: 30px;
 }
 
 .logout-button {
-    display: inline-block;
-    padding: 12px 24px;
     background-color: #ff3b30;
-    color: #ffffff;
-    text-decoration: none;
-    border-radius: 8px;
-    transition: background-color 0.3s ease;
 }
 
 .logout-button:hover {
-    background-color: #d70015;
+    background-color: #ff453a;
 }
+
+.consultas-list, .prontuario-list {
+    margin-top: 24px;
+}
+
+.consulta-item, .prontuario-item {
+    background-color: #f2f2f7;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 16px;
+}
+
+.consulta-item p, .prontuario-item p {
+    margin: 8px 0;
+}
+
+@media (max-width: 480px) {
+    .login-container, .profile-container, .consultas-container, .prontuario-container, .edit-account-container {
+        padding: 20px;
+        margin: 10px auto;
+    }
+
+    body {
+        padding: 10px;
+    }
+    .login-title, .profile-title {
+        font-size: 28px;
+    }
+
+    .login-subtitle, .profile-subtitle {
+        font-size: 16px;
+    }
+
+    .form-control,
+    .custom-submit-button {
+        font-size: 16px;
+    }
+
+    .photo-gallery {
+        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    }
+}
+

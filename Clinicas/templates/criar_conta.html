@@ -27,16 +27,16 @@
     </div>
 
     <div class="input-group">
-        {{ form.tipo(class="form-control", placeholder=" ") }}
+        {{ form.tipo(class="form-control", placeholder=" ", id="tipo") }}
         <label class="floating-label" for="tipo">Tipo (Médico ou Paciente)</label>
     </div>
 
-    <div class="input-group">
+    <div class="input-group" id="especialidade-group">
         {{ form.especialidade(class="form-control", placeholder=" ") }}
         <label class="floating-label" for="especialidade">Especialidade</label>
     </div>
 
-    <div class="input-group">
+    <div class="input-group" id="crm-group">
         {{ form.crm(class="form-control", placeholder=" ") }}
         <label class="floating-label" for="crm">CRM</label>
     </div>
@@ -54,4 +54,23 @@
         Já tem uma conta? <a href="{{ url_for('homepage') }}">Faça login aqui.</a>
     </p>
 </form>
+
+<script>
+document.getElementById('tipo').addEventListener('change', function() {
+    var tipo = this.value;
+    var especialidadeGroup = document.getElementById('especialidade-group');
+    var crmGroup = document.getElementById('crm-group');
+    
+    if (tipo === 'Médico') {
+        especialidadeGroup.style.display = 'block';
+        crmGroup.style.display = 'block';
+    } else {
+        especialidadeGroup.style.display = 'none';
+        crmGroup.style.display = 'none';
+    }
+});
+
+// Trigger change event on page load to set initial state
+document.getElementById('tipo').dispatchEvent(new Event('change'));
+</script>
 {% endblock %}
