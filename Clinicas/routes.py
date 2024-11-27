@@ -82,6 +82,10 @@ def perfil(id_usuario):
 
         return render_template('perfil.html', usuario=current_user, form=form_foto)
     
+    elif current_user.tipo != "Médico":
+        flash("Você não tem permissão para acessar o perfil de outros usuários.", "danger")
+        return redirect(url_for('perfil', id_usuario=current_user.id))
+
     else:
         usuario = Usuario.query.get(int(id_usuario))
         return render_template('perfil.html', usuario=usuario, form=None)
