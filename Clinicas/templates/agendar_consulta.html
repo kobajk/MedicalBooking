@@ -5,6 +5,7 @@
 {% block content %}
 <div class="consultas-container">
     <h1>Agendar Consulta</h1>
+    <a href="{{ url_for('perfil', id_usuario=current_user.id) }}" class="custom-submit-button">Voltar para o Perfil</a>
     <form method="POST">
         {{ form.csrf_token }}
         <div class="input-group">
@@ -18,10 +19,6 @@
         <div class="input-group">
             {{ form.data_hora(class="form-control", type="datetime-local") }}
             <label for="data_hora">Data e Hora</label>
-        </div>
-        <div class="input-group">
-            {{ form.status(class="form-control") }}
-            <label for="status">Status</label>
         </div>
         <div class="input-group">
             {{ form.observacoes(class="form-control") }}

@@ -47,7 +47,7 @@ class Consulta(database.Model):
     id_paciente = database.Column(database.Integer, database.ForeignKey('usuario.id'), nullable=False)
     id_profissional = database.Column(database.Integer, database.ForeignKey('usuario.id'), nullable=False)
     data_hora = database.Column(database.DateTime, nullable=False, default=datetime.utcnow)
-    status = database.Column(database.String(20), nullable=False)
+    status = database.Column(database.String(20), nullable=True)
     observacoes = database.Column(database.Text)
 
     # Relacionamentos com a tabela de Usuários

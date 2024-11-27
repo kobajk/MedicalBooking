@@ -59,14 +59,17 @@ class Form_Foto(FlaskForm):
     foto = FileField('Foto', validators=[DataRequired()])
     submit = SubmitField('Enviar')
 
-
 class Form_Gestao_Consulta(FlaskForm):
     id_paciente = SelectField('Paciente', coerce=int, validators=[DataRequired()])
     id_profissional = SelectField('Profissional', coerce=int, validators=[DataRequired()])
     data_hora = DateTimeLocalField('Data e Hora', format='%Y-%m-%dT%H:%M', validators=[DataRequired()])
-    status = SelectField('Status', choices=[('agendado', 'Agendado'), ('concluido', 'Concluído'), ('cancelado', 'Cancelado')], validators=[DataRequired()])
+    # status = SelectField('Status', choices=[('Agendado', 'Agendado'), ('Concluído', 'Concluído'), ('Cancelado', 'Cancelado'), ('Reagendado', 'Reagendado')], validators=[DataRequired()])
     observacoes = TextAreaField('Observações')
     submit = SubmitField('Agendar Consulta')
+
+class Form_Reagendar_Consulta(FlaskForm):
+    data_hora = DateTimeLocalField('Nova Data e Hora', format='%Y-%m-%dT%H:%M', validators=[DataRequired()])
+    submit = SubmitField('Reagendar Consulta')
 
 
 class Form_Prontuario(FlaskForm):

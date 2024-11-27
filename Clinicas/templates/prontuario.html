@@ -5,6 +5,7 @@
 {% block content %}
 <div class="prontuario-container">
     <h1>Prontuário</h1>
+    <a href="{{ url_for('perfil', id_usuario=current_user.id) }}" class="custom-submit-button">Voltar para o Perfil</a>
     {% if form %}
     <form method="POST">
         {{ form.csrf_token }}

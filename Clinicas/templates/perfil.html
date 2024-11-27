@@ -17,7 +17,9 @@
         <a href="{{ url_for('minhas_consultas') }}" class="custom-submit-button">Minhas Consultas</a>
         {% endif %}
         <a href="{{ url_for('editar_conta') }}" class="custom-submit-button">Editar Conta</a>
-        <a href="{{ url_for('excluir_conta') }}" class="custom-submit-button delete-account-button" onclick="return confirm('Tem certeza que deseja excluir sua conta? Esta ação não pode ser desfeita.');">Excluir Conta</a>
+        <form action="{{ url_for('excluir_conta') }}" method="POST" onsubmit="return confirm('Tem certeza que deseja excluir sua conta? Esta ação não pode ser desfeita.');">
+            <button type="submit" class="custom-submit-button delete-account-button">Excluir Conta</button>
+        </form>
     </div>
 
     {% if form %}

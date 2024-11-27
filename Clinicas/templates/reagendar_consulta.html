@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}Reagendar Consulta - MedicalBooking{% endblock %}
+
+{% block content %}
+<div class="consultas-container">
+    <h1 class="profile-title">Reagendar Consulta</h1>
+    
+    <form method="POST">
+        {{ form.csrf_token }}
+        <div class="input-group">
+            <label for="data_hora">Nova Data e Hora</label>
+            {{ form.data_hora(class="form-control", type="datetime-local") }}
+        </div>
+        <div class="input-group">
+            {{ form.submit(class="custom-submit-button", value="Reagendar") }}
+        </div>
+    </form>
+    
+    <a href="{{ url_for('minhas_consultas') }}" class="custom-submit-button">Voltar para Minhas Consultas</a>
+</div>
+{% endblock %}
+

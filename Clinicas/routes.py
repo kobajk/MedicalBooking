@@ -3,11 +3,14 @@
 from flask import render_template, url_for, redirect, flash, request
 from flask_login import login_required, login_user, logout_user, current_user
 from Clinicas import App, database, bcrypt
-from Clinicas.forms import Login_Form, Form_Criar_Conta, Form_Foto, Form_Gestao_Consulta, Form_Prontuario, Form_Editar_Conta
+from Clinicas.forms import Login_Form, Form_Criar_Conta, Form_Foto, Form_Gestao_Consulta, Form_Prontuario, Form_Editar_Conta, Form_Reagendar_Consulta
 from Clinicas.models import Usuario, Foto, Consulta, Prontuario
 import os
 from werkzeug.utils import secure_filename
 from datetime import datetime
+
+def now():
+    return datetime.utcnow()
 
 # link to the home page
 @App.route('/', methods=['GET', 'POST'])
@@ -147,7 +150,7 @@ def agendar_consulta():
             id_paciente=form.id_paciente.data,
             id_profissional=form.id_profissional.data,
             data_hora=form.data_hora.data,
-            status=form.status.data,
+            status="Agendado",
             observacoes=form.observacoes.data
         )
         database.session.add(nova_consulta)
@@ -157,9 +160,6 @@ def agendar_consulta():
 
     # Se houver erros no formulário, renderizar novamente com mensagens de erro
     return render_template('agendar_consulta.html', form=form)
-
-
-
 
 @App.route('/prontuario/<int:id_usuario>', methods=['GET', 'POST'])
 @login_required
@@ -200,7 +200,7 @@ def minhas_consultas():
         return redirect(url_for('perfil', id_usuario=current_user.id))
     
     consultas = Consulta.query.filter_by(id_paciente=current_user.id).all()
-    return render_template('minhas_consultas.html', consultas=consultas)
+    return render_template('minhas_consultas.html', consultas=consultas, now=now)
 
 @App.route('/consultas_agendadas')
 @login_required
@@ -215,11 +215,52 @@ def consultas_agendadas():
 @App.route('/excluir_conta', methods=['POST'])
 @login_required
 def excluir_conta():
-    user = Usuario.query.get(current_user.id)
-    database.session.delete(user)
-    database.session.commit()
-    flash('Sua conta foi excluída com sucesso.', 'success')
+    try:
+        user = Usuario.query.get(current_user.id)
+        if user:
+            # Remover todas as relações do usuário
+            user.fotos = []
+            user.consultas_paciente = []
+            user.consultas_profissional = []
+            user.prontuarios_paciente = []
+            user.prontuarios_profissional = []
+            
+            # Commit para salvar as alterações nas relações
+            database.session.commit()
+            
+            # Agora podemos excluir o usuário
+            database.session.delete(user)
+            database.session.commit()
+            
+            logout_user()
+            flash('Sua conta foi excluída com sucesso.', 'success')
+        else:
+            flash('Usuário não encontrado.', 'error')
+    except Exception as e:
+        database.session.rollback()
+        flash(f'Ocorreu um erro ao excluir a conta: {str(e)}', 'error')
+    
     return redirect(url_for('homepage'))
+
+@App.route('/reagendar_consulta/<int:id_consulta>', methods=['GET', 'POST'])
+@login_required
+def reagendar_consulta(id_consulta):
+    consulta = Consulta.query.get_or_404(id_consulta)
+    if consulta.id_paciente != current_user.id:
+        flash('Você não tem permissão para reagendar esta consulta.', 'danger')
+        return redirect(url_for('minhas_consultas'))
+
+    form = Form_Reagendar_Consulta()
+
+    if form.validate_on_submit():
+        consulta.data_hora = form.data_hora.data
+        consulta.status = 'Reagendado'
+        database.session.commit()
+        flash('Consulta reagendada com sucesso!', 'success')
+        return redirect(url_for('minhas_consultas'))
+
+    return render_template('reagendar_consulta.html', form=form, consulta=consulta)
+
 
 @App.route('/atualizar_consulta/<int:id_consulta>', methods=['POST'])
 @login_required
