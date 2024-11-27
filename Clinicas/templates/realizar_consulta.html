@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}Realizar Consulta - MedicalBooking{% endblock %}
+
+{% block content %}
+<div class="consulta-container">
+    <h1 class="profile-title">Realizar Consulta</h1>
+    
+    <div class="consulta-info">
+        <p><strong>Paciente:</strong> {{ consulta.paciente.username }}</p>
+        <p><strong>Data e Hora:</strong> {{ consulta.data_hora.strftime('%d/%m/%Y %H:%M') }}</p>
+    </div>
+
+    <form method="POST">
+        {{ form.csrf_token }}
+        <div class="input-group">
+            {{ form.anamnese(class="form-control") }}
+            <label for="anamnese">Anamnese</label>
+        </div>
+        <div class="input-group">
+            {{ form.exame_fisico(class="form-control") }}
+            <label for="exame_fisico">Exame Físico</label>
+        </div>
+        <div class="input-group">
+            {{ form.diagnostico(class="form-control") }}
+            <label for="diagnostico">Diagnóstico</label>
+        </div>
+        <div class="input-group">
+            {{ form.prescricao(class="form-control") }}
+            <label for="prescricao">Prescrição</label>
+        </div>
+        <div class="input-group">
+            {{ form.anotacoes_medicas(class="form-control") }}
+            <label for="anotacoes_medicas">Anotações Médicas</label>
+        </div>
+        <div class="input-group">
+            {{ form.submit(class="custom-submit-button") }}
+        </div>
+    </form>
+</div>
+{% endblock %}
+

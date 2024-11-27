@@ -4,31 +4,41 @@
 
 {% block content %}
 <div class="consultas-container">
-    <h1 class="profile-title">Consultas Agendadas</h1>
+    <h1 class="profile-title">Minha Agenda de Consultas</h1>
     
     <a href="{{ url_for('perfil', id_usuario=current_user.id) }}" class="custom-submit-button">Voltar para o Perfil</a>
 
-    {% if consultas %}
-    <div class="consultas-list">
-        {% for consulta in consultas %}
-        <div class="consulta-item">
-            <p><strong>Data e Hora:</strong> {{ consulta.data_hora.strftime('%d/%m/%Y %H:%M') }}</p>
-            <p><strong>Paciente:</strong> {{ consulta.paciente.username }}</p>
-            <p><strong>Status:</strong> {{ consulta.status }}</p>
-            <form method="POST" action="{{ url_for('atualizar_consulta', id_consulta=consulta.id) }}">
-                <div class="input-group">
-                    <label for="prescricao">Prescrição:</label>
-                    <textarea name="prescricao" id="prescricao" class="form-control">{{ consulta.prescricao or '' }}</textarea>
-                </div>
-                <button type="submit" name="action" value="atualizar" class="custom-submit-button">Atualizar Prescrição</button>
-                <button type="submit" name="action" value="cancelar" class="custom-submit-button cancel-button" onclick="return confirm('Tem certeza que deseja cancelar esta consulta?');">Cancelar Consulta</button>
-            </form>
-        </div>
+    <div class="agenda">
+        {% for dia, consultas in agenda.items() %}
+            <div class="dia-consultas">
+                <h2>{{ dia.strftime('%d/%m/%Y') }}</h2>
+                {% if consultas %}
+                    <ul class="lista-consultas">
+                    {% for consulta in consultas %}
+                        <li class="consulta-item">
+                            <p><strong>Horário:</strong> {{ consulta.data_hora.strftime('%H:%M') }}</p>
+                            <p><strong>Paciente:</strong> {{ consulta.paciente.username }}</p>
+                            <p><strong>Status:</strong> {{ consulta.status }}</p>
+                            {% if consulta.observacoes %}
+                                <p><strong>Observações:</strong> {{ consulta.observacoes }}</p>
+                            {% endif %}
+                            <form method="POST" action="{{ url_for('atualizar_consulta', id_consulta=consulta.id) }}">
+                                {% if consulta.status != 'Cancelada' and consulta.status != 'Concluído' %}
+                                <a href="{{ url_for('realizar_consulta', id_consulta=consulta.id) }}" class="custom-submit-button">Realizar Consulta</a>
+                                <button type="submit" name="action" value="cancelar" class="custom-submit-button cancel-button" onclick="return confirm('Tem certeza que deseja cancelar esta consulta?');">Cancelar Consulta</button>
+                                {% endif %}
+                            </form>
+                        </li>
+                    {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>Nenhuma consulta agendada para este dia.</p>
+                {% endif %}
+            </div>
+        {% else %}
+            <p>Não há consultas agendadas para os próximos 7 dias.</p>
         {% endfor %}
     </div>
-    {% else %}
-    <p>Você não tem consultas agendadas no momento.</p>
-    {% endif %}
 </div>
 {% endblock %}
 

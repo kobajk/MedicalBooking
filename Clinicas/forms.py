@@ -79,5 +79,11 @@ class Form_Prontuario(FlaskForm):
     prescricoes = TextAreaField('Prescrições')
     submit = SubmitField('Salvar Prontuário')
 
-
+class Form_Realizar_Consulta(FlaskForm):
+    anamnese = TextAreaField('Anamnese', validators=[DataRequired()])
+    exame_fisico = TextAreaField('Exame Físico', validators=[DataRequired()])
+    diagnostico = TextAreaField('Diagnóstico', validators=[DataRequired()])
+    prescricao = TextAreaField('Prescrição', validators=[DataRequired()])
+    anotacoes_medicas = TextAreaField('Anotações Médicas')
+    submit = SubmitField('Concluir Consulta')
 

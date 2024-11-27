@@ -3,11 +3,11 @@
 from flask import render_template, url_for, redirect, flash, request
 from flask_login import login_required, login_user, logout_user, current_user
 from Clinicas import App, database, bcrypt
-from Clinicas.forms import Login_Form, Form_Criar_Conta, Form_Foto, Form_Gestao_Consulta, Form_Prontuario, Form_Editar_Conta, Form_Reagendar_Consulta
+from Clinicas.forms import Login_Form, Form_Criar_Conta, Form_Foto, Form_Gestao_Consulta, Form_Prontuario, Form_Editar_Conta, Form_Reagendar_Consulta, Form_Realizar_Consulta
 from Clinicas.models import Usuario, Foto, Consulta, Prontuario
 import os
 from werkzeug.utils import secure_filename
-from datetime import datetime
+from datetime import datetime, timedelta
 
 def now():
     return datetime.utcnow()
@@ -161,36 +161,17 @@ def agendar_consulta():
     # Se houver erros no formulário, renderizar novamente com mensagens de erro
     return render_template('agendar_consulta.html', form=form)
 
-@App.route('/prontuario/<int:id_usuario>', methods=['GET', 'POST'])
+@App.route('/prontuario/<int:id_usuario>', methods=['GET'])
 @login_required
 def prontuario(id_usuario):
     usuario = Usuario.query.get_or_404(id_usuario)
+    if current_user.id != id_usuario and current_user.tipo != 'Médico':
+        flash('Acesso não autorizado.', 'danger')
+        return redirect(url_for('perfil', id_usuario=current_user.id))
 
-    # Listas de pacientes e profissionais para o formulário
-    pacientes = [(p.id, p.username) for p in Usuario.query.filter_by(tipo='Paciente').all()]
-    profissionais = [(m.id, m.username) for m in Usuario.query.filter_by(tipo='Médico').all()]
-
-    form = Form_Prontuario()
-    form.id_paciente.choices = pacientes  # Carregar as escolhas de pacientes
-    form.id_profissional.choices = profissionais  # Carregar as escolhas de profissionais
-
-    if request.method == 'POST' and current_user.tipo == 'Médico':
-        if form.validate_on_submit():
-            novo_prontuario = Prontuario(
-                id_paciente=form.id_paciente.data,
-                id_profissional=form.id_profissional.data,
-                anotacoes_medicas=form.anotacoes_medicas.data,
-                prescricoes=form.prescricoes.data,
-                data=datetime.utcnow()
-            )
-            database.session.add(novo_prontuario)
-            database.session.commit()
-            flash('Prontuário criado com sucesso!', 'success')
-            return redirect(url_for('prontuario', id_usuario=id_usuario))
-
-    # Mostrar prontuários existentes
     prontuarios = Prontuario.query.filter_by(id_paciente=id_usuario).all()
-    return render_template('prontuario.html', usuario=usuario, prontuarios=prontuarios, form=form if current_user.tipo == 'Médico' else None)
+    return render_template('prontuario.html', usuario=usuario, prontuarios=prontuarios)
+
 
 @App.route('/minhas_consultas')
 @login_required
@@ -209,8 +190,28 @@ def consultas_agendadas():
         flash('Acesso não autorizado.', 'danger')
         return redirect(url_for('perfil', id_usuario=current_user.id))
     
-    consultas = Consulta.query.filter_by(id_profissional=current_user.id).all()
-    return render_template('consultas_agendadas.html', consultas=consultas)
+    # Obter a data atual e a data final (7 dias a partir de hoje)
+    data_inicio = datetime.now().date()
+    data_fim = data_inicio + timedelta(days=7)
+    
+    # Buscar consultas não canceladas para os próximos 7 dias
+    consultas = Consulta.query.filter(
+        Consulta.id_profissional == current_user.id,
+        Consulta.status != 'Cancelada',
+        Consulta.data_hora >= data_inicio,
+        Consulta.data_hora < data_fim
+    ).order_by(Consulta.data_hora).all()
+    
+    # Organizar consultas por dia e hora
+    agenda = {}
+    for consulta in consultas:
+        dia = consulta.data_hora.date()
+        if dia not in agenda:
+            agenda[dia] = []
+        agenda[dia].append(consulta)
+    
+    return render_template('consultas_agendadas.html', agenda=agenda, data_inicio=data_inicio, data_fim=data_fim)
+
 
 @App.route('/excluir_conta', methods=['POST'])
 @login_required
@@ -281,3 +282,36 @@ def atualizar_consulta(id_consulta):
         return redirect(url_for('consultas_agendadas'))
     else:
         return redirect(url_for('minhas_consultas'))
+
+@App.route('/realizar_consulta/<int:id_consulta>', methods=['GET', 'POST'])
+@login_required
+def realizar_consulta(id_consulta):
+    if current_user.tipo != 'Médico':
+        flash('Acesso não autorizado.', 'danger')
+        return redirect(url_for('perfil', id_usuario=current_user.id))
+
+    consulta = Consulta.query.get_or_404(id_consulta)
+    if consulta.id_profissional != current_user.id:
+        flash('Você não tem permissão para realizar esta consulta.', 'danger')
+        return redirect(url_for('consultas_agendadas'))
+
+    form = Form_Realizar_Consulta()
+
+    if form.validate_on_submit():
+        prontuario = Prontuario(
+            id_paciente=consulta.id_paciente,
+            id_profissional=current_user.id,
+            anamnese=form.anamnese.data,
+            exame_fisico=form.exame_fisico.data,
+            diagnostico=form.diagnostico.data,
+            prescricoes=form.prescricao.data,
+            anotacoes_medicas=form.anotacoes_medicas.data,
+            data=datetime.utcnow()
+        )
+        consulta.status = 'Concluído'
+        database.session.add(prontuario)
+        database.session.commit()
+        flash('Consulta concluída com sucesso!', 'success')
+        return redirect(url_for('consultas_agendadas'))
+
+    return render_template('realizar_consulta.html', form=form, consulta=consulta)

@@ -39,12 +39,20 @@
 
     <!-- Aqui você pode adicionar a listagem dos prontuários existentes -->
     {% if prontuarios %}
-        <h2>Prontuários Existente</h2>
+        <h2>Prontuários Existentes</h2>
         {% for prontuario in prontuarios %}
             <div>
-                <p><strong>Data:</strong> {{ prontuario.data.strftime('%Y-%m-%d %H:%M') }}</p>
-                <p><strong>Anotações Médicas:</strong> {{ prontuario.anotacoes_medicas }}</p>
+                <h2>Consulta em {{ prontuario.data.strftime('%d/%m/%Y %H:%M') }}</h2>
+                <p><strong>Médico:</strong> {{ prontuario.profissional.username }}</p>
+                <p><strong>Especialidade:</strong> {{ prontuario.profissional.especialidade }}</p>
+                <p><strong>CRM:</strong> {{ prontuario.profissional.crm }}</p>
+                <p><strong>Anamnese:</strong> {{ prontuario.anamnese }}</p>
+                <p><strong>Exame Físico:</strong> {{ prontuario.exame_fisico }}</p>
+                <p><strong>Diagnóstico:</strong> {{ prontuario.diagnostico }}</p>
                 <p><strong>Prescrições:</strong> {{ prontuario.prescricoes }}</p>
+                {% if prontuario.anotacoes_medicas %}
+                    <p><strong>Anotações Médicas:</strong> {{ prontuario.anotacoes_medicas }}</p>
+                {% endif %}
             </div>
         {% endfor %}
     {% else %}
@@ -52,4 +60,5 @@
     {% endif %}
 </div>
 {% endblock %}
+
 

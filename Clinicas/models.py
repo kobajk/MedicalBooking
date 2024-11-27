@@ -56,16 +56,17 @@ class Consulta(database.Model):
 
 
 class Prontuario(database.Model):
-
     id = database.Column(database.Integer, primary_key=True)
     id_paciente = database.Column(database.Integer, database.ForeignKey('usuario.id'), nullable=False)
     id_profissional = database.Column(database.Integer, database.ForeignKey('usuario.id'), nullable=False)
-    data = database.Column(database.DateTime, nullable=False, default=datetime.utcnow)
+    anamnese = database.Column(database.Text, nullable=False)
+    exame_fisico = database.Column(database.Text, nullable=False)
+    diagnostico = database.Column(database.Text, nullable=False)
+    prescricoes = database.Column(database.Text, nullable=False)
     anotacoes_medicas = database.Column(database.Text, nullable=True)
-    prescricoes = database.Column(database.Text, nullable=True)
+    data = database.Column(database.DateTime, nullable=False, default=datetime.utcnow)
 
-    # Relacionamentos com a tabela de Usuários e Consultas
     paciente = database.relationship('Usuario', foreign_keys=[id_paciente], backref='prontuarios_paciente')
     profissional = database.relationship('Usuario', foreign_keys=[id_profissional], backref='prontuarios_profissional')
-    
+
 
