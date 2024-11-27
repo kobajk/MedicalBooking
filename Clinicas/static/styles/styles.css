@@ -257,3 +257,67 @@ body {
     }
 }
 
+
+.consent-group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.consent-group input[type="checkbox"] {
+    margin-right: 10px;
+}
+
+.consent-group label {
+    font-size: 14px;
+    color: #1d1d1f;
+}
+
+.consent-group a {
+    color: #0071e3;
+    text-decoration: none;
+}
+
+.consent-group a:hover {
+    text-decoration: underline;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 600px;
+    border-radius: 12px;
+}
+
+.modal-content h2 {
+    margin-top: 0;
+}
+
+#closeModal {
+    margin-top: 20px;
+}
+
+.custom-submit-button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+.custom-submit-button:disabled:hover {
+    background-color: #cccccc;
+}
+

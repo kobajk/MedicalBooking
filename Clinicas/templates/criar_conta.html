@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block title %}Criar conta - MedicalBooking{% endblock %}
 {% block content %}
-<form method="POST" class="login-form">
+<form method="POST" class="login-form" id="createAccountForm">
     {{ form.csrf_token }}
     <h1 class="login-title">MedicalBooking</h1>
     <p class="login-subtitle">Crie sua conta para começar</p>
@@ -46,14 +46,27 @@
         <label class="floating-label" for="telefone">Telefone</label>
     </div>
 
+    <div class="input-group consent-group">
+        <input type="checkbox" id="consent" name="consent" required>
+        <label for="consent">Eu li e aceito os <a href="#" id="termsLink">termos e condições</a></label>
+    </div>
+
     <div class="input-group">
-        {{ form.submit(class="custom-submit-button", value="Criar conta") }}
+        {{ form.submit(class="custom-submit-button", value="Criar conta", disabled=True, id="submitButton") }}
     </div>
 
     <p class="create-account">
         Já tem uma conta? <a href="{{ url_for('homepage') }}">Faça login aqui.</a>
     </p>
 </form>
+
+<div id="termsModal" class="modal">
+    <div class="modal-content">
+        <h2>Termos e Condições</h2>
+        <p>Aqui vão os termos e condições do MedicalBooking...</p>
+        <button id="closeModal" class="custom-submit-button">Fechar</button>
+    </div>
+</div>
 
 <script>
 document.getElementById('tipo').addEventListener('change', function() {
@@ -72,5 +85,34 @@ document.getElementById('tipo').addEventListener('change', function() {
 
 // Trigger change event on page load to set initial state
 document.getElementById('tipo').dispatchEvent(new Event('change'));
+
+// Consent checkbox and submit button logic
+var consentCheckbox = document.getElementById('consent');
+var submitButton = document.getElementById('submitButton');
+
+consentCheckbox.addEventListener('change', function() {
+    submitButton.disabled = !this.checked;
+});
+
+// Terms modal logic
+var modal = document.getElementById('termsModal');
+var termsLink = document.getElementById('termsLink');
+var closeModal = document.getElementById('closeModal');
+
+termsLink.onclick = function(e) {
+    e.preventDefault();
+    modal.style.display = "block";
+}
+
+closeModal.onclick = function() {
+    modal.style.display = "none";
+}
+
+window.onclick = function(event) {
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+}
 </script>
 {% endblock %}
+
