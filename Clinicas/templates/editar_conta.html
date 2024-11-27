@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Conta - MedicalBooking{% endblock %}
+
+{% block content %}
+<div class="edit-account-container">
+    <h1>Editar Conta</h1>
+    <form method="POST">
+        {{ form.csrf_token }}
+        <div class="input-group">
+            {{ form.username(class="form-control") }}
+            <label>Nome de Usuário</label>
+        </div>
+        <div class="input-group">
+            {{ form.email(class="form-control") }}
+            <label>Email</label>
+        </div>
+        <div class="input-group">
+            {{ form.senha_atual(class="form-control") }}
+            <label>Senha Atual</label>
+        </div>
+        <div class="input-group">
+            {{ form.nova_senha(class="form-control") }}
+            <label>Nova Senha</label>
+        </div>
+        <div class="input-group">
+            {{ form.confirmar_nova_senha(class="form-control") }}
+            <label>Confirmar Nova Senha</label>
+        </div>
+        <div class="input-group">
+            {{ form.telefone(class="form-control") }}
+            <label>Telefone</label>
+        </div>
+        <div class="input-group">
+            {{ form.submit(class="custom-submit-button") }}
+        </div>
+    </form>
+</div>
+{% endblock %}

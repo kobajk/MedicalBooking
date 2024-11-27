@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}Prontuário - MedicalBooking{% endblock %}
+
+{% block content %}
+<div class="prontuario-container">
+    <h1>Prontuário</h1>
+    {% if form %}
+    <form method="POST">
+        {{ form.csrf_token }}
+        <div class="input-group">
+            <select name="id_paciente" class="form-control">
+                {% for id, username in form.id_paciente.choices %}
+                <option value="{{ id }}">{{ username }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="input-group">
+            <select name="id_profissional" class="form-control">
+                {% for id, username in form.id_profissional.choices %}
+                <option value="{{ id }}">{{ username }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="input-group">
+            {{ form.anotacoes_medicas(class="form-control") }}
+            <label for="anotacoes_medicas">Anotações Médicas</label>
+        </div>
+        <div class="input-group">
+            {{ form.prescricoes(class="form-control") }}
+            <label for="prescricoes">Prescrições</label>
+        </div>
+        <div class="input-group">
+            {{ form.submit(class="custom-submit-button", value="Salvar Prontuário") }}
+        </div>
+    </form>
+    {% endif %}
+
+    <!-- Aqui você pode adicionar a listagem dos prontuários existentes -->
+    {% if prontuarios %}
+        <h2>Prontuários Existente</h2>
+        {% for prontuario in prontuarios %}
+            <div>
+                <p><strong>Data:</strong> {{ prontuario.data.strftime('%Y-%m-%d %H:%M') }}</p>
+                <p><strong>Anotações Médicas:</strong> {{ prontuario.anotacoes_medicas }}</p>
+                <p><strong>Prescrições:</strong> {{ prontuario.prescricoes }}</p>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>Nenhum prontuário encontrado.</p>
+    {% endif %}
+</div>
+{% endblock %}
+

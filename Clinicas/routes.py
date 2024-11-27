@@ -1,12 +1,13 @@
 #%%
 # Create the routes for the application (links)
-from flask import render_template, url_for, redirect, flash
+from flask import render_template, url_for, redirect, flash, request
 from flask_login import login_required, login_user, logout_user, current_user
 from Clinicas import App, database, bcrypt
-from Clinicas.forms import Login_Form, Form_Criar_Conta, Form_Foto
-from Clinicas.models import Usuario, Foto
+from Clinicas.forms import Login_Form, Form_Criar_Conta, Form_Foto, Form_Gestao_Consulta, Form_Prontuario, Form_Editar_Conta
+from Clinicas.models import Usuario, Foto, Consulta, Prontuario
 import os
 from werkzeug.utils import secure_filename
+from datetime import datetime
 
 # link to the home page
 @App.route('/', methods=['GET', 'POST'])
@@ -96,3 +97,98 @@ def perfil(id_usuario):
 def logout():
     logout_user()
     return redirect(url_for('homepage'))
+
+
+@App.route('/editar_conta', methods=['GET', 'POST'])
+@login_required
+def editar_conta():
+    form = Form_Editar_Conta(obj=current_user)  # Pré-carregar o formulário com dados do usuário atual
+
+    if request.method == 'POST':
+        if form.validate_on_submit():
+            if bcrypt.check_password_hash(current_user.senha, form.senha_atual.data):
+                current_user.username = form.username.data
+                current_user.email = form.email.data
+                current_user.telefone = form.telefone.data
+                current_user.tipo = form.tipo.data
+
+                if form.tipo.data == 'Médico':
+                    current_user.especialidade = form.especialidade.data
+                    current_user.crm = form.crm.data
+                else:
+                    current_user.especialidade = None
+                    current_user.crm = None
+
+                if form.nova_senha.data:
+                    current_user.senha = bcrypt.generate_password_hash(form.nova_senha.data).decode('utf-8')
+
+                database.session.commit()
+                flash('Conta atualizada com sucesso!', 'success')
+                return redirect(url_for('perfil', id_usuario=current_user.id))
+            else:
+                flash('Senha atual incorreta.', 'danger')
+
+    return render_template('editar_conta.html', form=form)
+
+
+
+
+@App.route('/agendar_consulta', methods=['GET', 'POST'])
+@login_required
+def agendar_consulta():
+    form = Form_Gestao_Consulta()
+    # Assegure-se de que os campos Select estão preenchidos com as opções corretas
+    form.id_paciente.choices = [(p.id, p.username) for p in Usuario.query.filter_by(tipo='Paciente').all()]
+    form.id_profissional.choices = [(m.id, m.username) for m in Usuario.query.filter_by(tipo='Médico').all()]
+
+    if form.validate_on_submit():
+        # Criação de uma nova consulta
+        nova_consulta = Consulta(
+            id_paciente=form.id_paciente.data,
+            id_profissional=form.id_profissional.data,
+            data_hora=form.data_hora.data,
+            status=form.status.data,
+            observacoes=form.observacoes.data
+        )
+        database.session.add(nova_consulta)
+        database.session.commit()
+        flash('Consulta agendada com sucesso!', 'success')
+        return redirect(url_for('perfil', id_usuario=current_user.id))
+
+    # Se houver erros no formulário, renderizar novamente com mensagens de erro
+    return render_template('agendar_consulta.html', form=form)
+
+
+
+
+@App.route('/prontuario/<int:id_usuario>', methods=['GET', 'POST'])
+@login_required
+def prontuario(id_usuario):
+    usuario = Usuario.query.get_or_404(id_usuario)
+
+    # Listas de pacientes e profissionais para o formulário
+    pacientes = [(p.id, p.username) for p in Usuario.query.filter_by(tipo='Paciente').all()]
+    profissionais = [(m.id, m.username) for m in Usuario.query.filter_by(tipo='Médico').all()]
+
+    form = Form_Prontuario()
+    form.id_paciente.choices = pacientes  # Carregar as escolhas de pacientes
+    form.id_profissional.choices = profissionais  # Carregar as escolhas de profissionais
+
+    if request.method == 'POST' and current_user.tipo == 'Médico':
+        if form.validate_on_submit():
+            novo_prontuario = Prontuario(
+                id_paciente=form.id_paciente.data,
+                id_profissional=form.id_profissional.data,
+                anotacoes_medicas=form.anotacoes_medicas.data,
+                prescricoes=form.prescricoes.data,
+                data=datetime.utcnow()
+            )
+            database.session.add(novo_prontuario)
+            database.session.commit()
+            flash('Prontuário criado com sucesso!', 'success')
+            return redirect(url_for('prontuario', id_usuario=id_usuario))
+
+    # Mostrar prontuários existentes
+    prontuarios = Prontuario.query.filter_by(id_paciente=id_usuario).all()
+    return render_template('prontuario.html', usuario=usuario, prontuarios=prontuarios, form=form if current_user.tipo == 'Médico' else None)
+

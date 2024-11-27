@@ -9,7 +9,12 @@
     
     <div class="profile-menu">
         <p>Escolha uma opção no menu abaixo para gerenciar suas informações.</p>
-        <!-- Add menu options here -->
+        <!-- Botão para editar conta -->
+        <a href="{{ url_for('editar_conta') }}" class="custom-submit-button">Editar Conta</a>
+        <!-- Botão para agendar consulta -->
+        <a href="{{ url_for('agendar_consulta') }}" class="custom-submit-button">Agendar Consulta</a>
+        <!-- Botão para visualizar prontuários -->
+        <a href="{{ url_for('prontuario', id_usuario=usuario.id) }}" class="custom-submit-button">Prontuários</a>
     </div>
 
     {% if form %}

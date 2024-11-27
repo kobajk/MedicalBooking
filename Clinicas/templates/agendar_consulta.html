@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Agendar Consulta - MedicalBooking{% endblock %}
+
+{% block content %}
+<div class="consultas-container">
+    <h1>Agendar Consulta</h1>
+    <form method="POST">
+        {{ form.csrf_token }}
+        <div class="input-group">
+            {{ form.id_paciente(class="form-control") }}
+            <label for="id_paciente">Paciente</label>
+        </div>
+        <div class="input-group">
+            {{ form.id_profissional(class="form-control") }}
+            <label for="id_profissional">Profissional</label>
+        </div>
+        <div class="input-group">
+            {{ form.data_hora(class="form-control", type="datetime-local") }}
+            <label for="data_hora">Data e Hora</label>
+        </div>
+        <div class="input-group">
+            {{ form.status(class="form-control") }}
+            <label for="status">Status</label>
+        </div>
+        <div class="input-group">
+            {{ form.observacoes(class="form-control") }}
+            <label for="observacoes">Observações</label>
+        </div>
+        <div class="input-group">
+            {{ form.submit(class="custom-submit-button") }}
+        </div>
+    </form>
+</div>
+{% endblock %}
