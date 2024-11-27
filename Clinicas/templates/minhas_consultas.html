@@ -6,17 +6,21 @@
 <div class="consultas-container">
     <h1 class="profile-title">Minhas Consultas</h1>
     
-    <!-- Botão para voltar ao perfil -->
-    <a href="{{ url_for('perfil', id_usuario=current_user.id) }}" class="custom-submit-button">Voltar ao Perfil</a>
+    <a href="{{ url_for('perfil', id_usuario=current_user.id) }}" class="custom-submit-button">Voltar para o Perfil</a>
 
     {% if consultas %}
     <div class="consultas-list">
         {% for consulta in consultas %}
         <div class="consulta-item">
             <p><strong>Data e Hora:</strong> {{ consulta.data_hora.strftime('%d/%m/%Y %H:%M') }}</p>
-            <p><strong>Profissional:</strong> {{ consulta.profissional.username }}</p>
+            <p><strong>Médico:</strong> {{ consulta.profissional.username }}</p>
             <p><strong>Status:</strong> {{ consulta.status }}</p>
-            <p><strong>Observações:</strong> {{ consulta.observacoes }}</p>
+            {% if consulta.prescricao %}
+            <p><strong>Prescrição:</strong> {{ consulta.prescricao }}</p>
+            {% endif %}
+            <form method="POST" action="{{ url_for('atualizar_consulta', id_consulta=consulta.id) }}">
+                <button type="submit" name="action" value="cancelar" class="custom-submit-button cancel-button" onclick="return confirm('Tem certeza que deseja cancelar esta consulta?');">Cancelar Consulta</button>
+            </form>
         </div>
         {% endfor %}
     </div>
@@ -25,3 +29,4 @@
     {% endif %}
 </div>
 {% endblock %}
+

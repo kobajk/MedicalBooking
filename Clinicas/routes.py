@@ -195,6 +195,10 @@ def prontuario(id_usuario):
 @App.route('/minhas_consultas')
 @login_required
 def minhas_consultas():
+    if current_user.tipo != 'Paciente':
+        flash('Acesso não autorizado.', 'danger')
+        return redirect(url_for('perfil', id_usuario=current_user.id))
+    
     consultas = Consulta.query.filter_by(id_paciente=current_user.id).all()
     return render_template('minhas_consultas.html', consultas=consultas)
 
@@ -202,8 +206,37 @@ def minhas_consultas():
 @login_required
 def consultas_agendadas():
     if current_user.tipo != 'Médico':
-        flash('Acesso não autorizado. Apenas médicos podem ver consultas agendadas.', 'danger')
+        flash('Acesso não autorizado.', 'danger')
         return redirect(url_for('perfil', id_usuario=current_user.id))
     
     consultas = Consulta.query.filter_by(id_profissional=current_user.id).all()
     return render_template('consultas_agendadas.html', consultas=consultas)
+
+@App.route('/excluir_conta', methods=['POST'])
+@login_required
+def excluir_conta():
+    user = Usuario.query.get(current_user.id)
+    database.session.delete(user)
+    database.session.commit()
+    flash('Sua conta foi excluída com sucesso.', 'success')
+    return redirect(url_for('homepage'))
+
+@App.route('/atualizar_consulta/<int:id_consulta>', methods=['POST'])
+@login_required
+def atualizar_consulta(id_consulta):
+    consulta = Consulta.query.get_or_404(id_consulta)
+    action = request.form.get('action')
+
+    if action == 'cancelar':
+        consulta.status = 'Cancelada'
+        flash('Consulta cancelada com sucesso.', 'success')
+    elif action == 'atualizar' and current_user.tipo == 'Médico':
+        consulta.prescricao = request.form.get('prescricao')
+        flash('Prescrição atualizada com sucesso.', 'success')
+
+    database.session.commit()
+    
+    if current_user.tipo == 'Médico':
+        return redirect(url_for('consultas_agendadas'))
+    else:
+        return redirect(url_for('minhas_consultas'))

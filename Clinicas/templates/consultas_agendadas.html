@@ -4,10 +4,9 @@
 
 {% block content %}
 <div class="consultas-container">
-    <h1 class="profile-title">Consultas Agendadas Comigo</h1>
+    <h1 class="profile-title">Consultas Agendadas</h1>
     
-    <!-- Botão para voltar ao perfil -->
-    <a href="{{ url_for('perfil', id_usuario=current_user.id) }}" class="custom-submit-button">Voltar ao Perfil</a>
+    <a href="{{ url_for('perfil', id_usuario=current_user.id) }}" class="custom-submit-button">Voltar para o Perfil</a>
 
     {% if consultas %}
     <div class="consultas-list">
@@ -16,7 +15,14 @@
             <p><strong>Data e Hora:</strong> {{ consulta.data_hora.strftime('%d/%m/%Y %H:%M') }}</p>
             <p><strong>Paciente:</strong> {{ consulta.paciente.username }}</p>
             <p><strong>Status:</strong> {{ consulta.status }}</p>
-            <p><strong>Observações:</strong> {{ consulta.observacoes }}</p>
+            <form method="POST" action="{{ url_for('atualizar_consulta', id_consulta=consulta.id) }}">
+                <div class="input-group">
+                    <label for="prescricao">Prescrição:</label>
+                    <textarea name="prescricao" id="prescricao" class="form-control">{{ consulta.prescricao or '' }}</textarea>
+                </div>
+                <button type="submit" name="action" value="atualizar" class="custom-submit-button">Atualizar Prescrição</button>
+                <button type="submit" name="action" value="cancelar" class="custom-submit-button cancel-button" onclick="return confirm('Tem certeza que deseja cancelar esta consulta?');">Cancelar Consulta</button>
+            </form>
         </div>
         {% endfor %}
     </div>
@@ -25,3 +31,4 @@
     {% endif %}
 </div>
 {% endblock %}
+
