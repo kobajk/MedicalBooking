@@ -87,13 +87,14 @@ MedicalBooking/
 │   │   ├── styles
 │   │   │   ├── styles.css
 │   ├── Templates
+│   │   ├── agendar_consulta.html
 │   │   ├── base.html
+│   │   ├── consultas_agendadas.html
 │   │   ├── criar_conta.html
 │   │   ├── homepage.html
+│   │   ├── minhas_consultas.html
 │   │   ├── perfil.html
-│   │   ├──
-│   │   ├──
-│   │   ├──
+│   │   ├── prontuario.html
 │   ├── __init__.py
 │   ├── forms.py
 │   ├── models.py
@@ -112,3 +113,8 @@ MedicalBooking/
 - **Descrição**: A aplicação é executada em um ambiente local para desenvolvimento e testes.
 - **Principais Funcionalidades**:
     - Scripts automatizados de criação de banco de dados e execução da aplicação
+
+## Detalhes de Segurança
+
+- **Dados_pessoais**: O ambiente possui um sistema de encriptação de senhas que fortalece a segurança dos usuarios com o sistema, além disso, 
+possui um banco de dados privado o que ajuda a não a vazar informações sensiveis. Ao fazer o cadastro o usuario concorda com os termos de uso do sistema.
