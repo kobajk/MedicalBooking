@@ -192,3 +192,18 @@ def prontuario(id_usuario):
     prontuarios = Prontuario.query.filter_by(id_paciente=id_usuario).all()
     return render_template('prontuario.html', usuario=usuario, prontuarios=prontuarios, form=form if current_user.tipo == 'Médico' else None)
 
+@App.route('/minhas_consultas')
+@login_required
+def minhas_consultas():
+    consultas = Consulta.query.filter_by(id_paciente=current_user.id).all()
+    return render_template('minhas_consultas.html', consultas=consultas)
+
+@App.route('/consultas_agendadas')
+@login_required
+def consultas_agendadas():
+    if current_user.tipo != 'Médico':
+        flash('Acesso não autorizado. Apenas médicos podem ver consultas agendadas.', 'danger')
+        return redirect(url_for('perfil', id_usuario=current_user.id))
+    
+    consultas = Consulta.query.filter_by(id_profissional=current_user.id).all()
+    return render_template('consultas_agendadas.html', consultas=consultas)
