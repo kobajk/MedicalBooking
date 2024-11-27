@@ -1,5 +1,5 @@
 #%%
-# Create the routes for the application (links)
+# Importar módulos e funções necessários
 from flask import render_template, url_for, redirect, flash, request
 from flask_login import login_required, login_user, logout_user, current_user
 from Clinicas import App, database, bcrypt
@@ -9,17 +9,20 @@ import os
 from werkzeug.utils import secure_filename
 from datetime import datetime, timedelta
 
+# Função para obter a hora atual em UTC
 def now():
     return datetime.utcnow()
 
-# link to the home page
+# Rota para a página inicial
 @App.route('/', methods=['GET', 'POST'])
 def homepage():
     form_login = Login_Form()
 
+    # Lidar com a submissão do formulário de login
     if form_login.validate_on_submit():
         usuario = Usuario.query.filter_by(email=form_login.email.data).first()
 
+        # Verificar se o usuário existe e a senha está correta
         if usuario and bcrypt.check_password_hash(usuario.senha, form_login.senha.data):
             login_user(usuario, remember=form_login.lembrar.data)
             return redirect(url_for('perfil', id_usuario=usuario.id))
@@ -28,17 +31,16 @@ def homepage():
 
     return render_template('homepage.html', form=form_login)
 
-
-# link to the create account page
+# Rota para a página de criação de conta
 @App.route('/criar_conta', methods=['GET', 'POST'])
 def criar_conta():
     form_criar_conta = Form_Criar_Conta()
 
+    # Lidar com a submissão do formulário de criação de conta
     if form_criar_conta.validate_on_submit():
-
         senha_criptogarfada  = bcrypt.generate_password_hash(form_criar_conta.senha.data).decode('utf-8')
 
-        # Ajusta `crm` e `especialidade` para `None` se o tipo for "Paciente"
+        # Ajustar `crm` e `especialidade` para `None` se o tipo for "Paciente"
         if form_criar_conta.tipo.data == "Médico":
             crm = form_criar_conta.crm.data
             especialidade = form_criar_conta.especialidade.data
@@ -46,6 +48,7 @@ def criar_conta():
             crm = None
             especialidade = None
 
+        # Criar novo usuário
         usuario = Usuario(username=form_criar_conta.username.data,
                         email=form_criar_conta.email.data,
                         senha=senha_criptogarfada,
@@ -63,15 +66,16 @@ def criar_conta():
 
     return render_template('criar_conta.html', form=form_criar_conta)
 
-
-# link to the perfil page
+# Rota para a página de perfil
 @App.route('/perfil/<id_usuario>', methods=['GET', 'POST'])
 @login_required
 def perfil(id_usuario):
 
+    # Verificar se o usuário atual está acessando seu próprio perfil
     if int(current_user.id) == int(id_usuario):
         form_foto = Form_Foto()
 
+        # Lidar com a submissão do formulário de upload de foto
         if form_foto.validate_on_submit():
             arquivo = form_foto.foto.data
             
@@ -86,6 +90,7 @@ def perfil(id_usuario):
 
         return render_template('perfil.html', usuario=current_user, form=form_foto)
     
+    # Verificar se o usuário atual não é um médico
     elif current_user.tipo != "Médico":
         flash("Você não tem permissão para acessar o perfil de outros usuários.", "danger")
         return redirect(url_for('perfil', id_usuario=current_user.id))
@@ -94,19 +99,20 @@ def perfil(id_usuario):
         usuario = Usuario.query.get(int(id_usuario))
         return render_template('perfil.html', usuario=usuario, form=None)
 
-
+# Rota para fazer logout
 @App.route('/logout')
 @login_required
 def logout():
     logout_user()
     return redirect(url_for('homepage'))
 
-
+# Rota para editar os detalhes da conta
 @App.route('/editar_conta', methods=['GET', 'POST'])
 @login_required
 def editar_conta():
     form = Form_Editar_Conta(obj=current_user)  # Pré-carregar o formulário com dados do usuário atual
 
+    # Lidar com a submissão do formulário de edição de conta
     if request.method == 'POST':
         if form.validate_on_submit():
             if bcrypt.check_password_hash(current_user.senha, form.senha_atual.data):
@@ -133,19 +139,17 @@ def editar_conta():
 
     return render_template('editar_conta.html', form=form)
 
-
-
-
+# Rota para agendar uma consulta
 @App.route('/agendar_consulta', methods=['GET', 'POST'])
 @login_required
 def agendar_consulta():
     form = Form_Gestao_Consulta()
-    # Assegure-se de que os campos Select estão preenchidos com as opções corretas
+    # Assegurar que os campos Select estão preenchidos com as opções corretas
     form.id_paciente.choices = [(p.id, p.username) for p in Usuario.query.filter_by(tipo='Paciente').all()]
     form.id_profissional.choices = [(m.id, m.username) for m in Usuario.query.filter_by(tipo='Médico').all()]
 
+    # Lidar com a submissão do formulário de agendamento de consulta
     if form.validate_on_submit():
-        # Criação de uma nova consulta
         nova_consulta = Consulta(
             id_paciente=form.id_paciente.data,
             id_profissional=form.id_profissional.data,
@@ -158,13 +162,14 @@ def agendar_consulta():
         flash('Consulta agendada com sucesso!', 'success')
         return redirect(url_for('perfil', id_usuario=current_user.id))
 
-    # Se houver erros no formulário, renderizar novamente com mensagens de erro
     return render_template('agendar_consulta.html', form=form)
 
+# Rota para visualizar prontuários
 @App.route('/prontuario/<int:id_usuario>', methods=['GET'])
 @login_required
 def prontuario(id_usuario):
     usuario = Usuario.query.get_or_404(id_usuario)
+    # Verificar se o usuário atual está autorizado a visualizar os prontuários
     if current_user.id != id_usuario and current_user.tipo != 'Médico':
         flash('Acesso não autorizado.', 'danger')
         return redirect(url_for('perfil', id_usuario=current_user.id))
@@ -172,10 +177,11 @@ def prontuario(id_usuario):
     prontuarios = Prontuario.query.filter_by(id_paciente=id_usuario).all()
     return render_template('prontuario.html', usuario=usuario, prontuarios=prontuarios)
 
-
+# Rota para visualizar as consultas do usuário atual
 @App.route('/minhas_consultas')
 @login_required
 def minhas_consultas():
+    # Verificar se o usuário atual é um paciente
     if current_user.tipo != 'Paciente':
         flash('Acesso não autorizado.', 'danger')
         return redirect(url_for('perfil', id_usuario=current_user.id))
@@ -183,9 +189,11 @@ def minhas_consultas():
     consultas = Consulta.query.filter_by(id_paciente=current_user.id).all()
     return render_template('minhas_consultas.html', consultas=consultas, now=now)
 
+# Rota para visualizar consultas agendadas para médicos
 @App.route('/consultas_agendadas')
 @login_required
 def consultas_agendadas():
+    # Verificar se o usuário atual é um médico
     if current_user.tipo != 'Médico':
         flash('Acesso não autorizado.', 'danger')
         return redirect(url_for('perfil', id_usuario=current_user.id))
@@ -212,7 +220,7 @@ def consultas_agendadas():
     
     return render_template('consultas_agendadas.html', agenda=agenda, data_inicio=data_inicio, data_fim=data_fim)
 
-
+# Rota para excluir a conta do usuário atual
 @App.route('/excluir_conta', methods=['POST'])
 @login_required
 def excluir_conta():
@@ -243,16 +251,19 @@ def excluir_conta():
     
     return redirect(url_for('homepage'))
 
+# Rota para reagendar uma consulta
 @App.route('/reagendar_consulta/<int:id_consulta>', methods=['GET', 'POST'])
 @login_required
 def reagendar_consulta(id_consulta):
     consulta = Consulta.query.get_or_404(id_consulta)
+    # Verificar se o usuário atual está autorizado a reagendar a consulta
     if consulta.id_paciente != current_user.id:
         flash('Você não tem permissão para reagendar esta consulta.', 'danger')
         return redirect(url_for('minhas_consultas'))
 
     form = Form_Reagendar_Consulta()
 
+    # Lidar com a submissão do formulário de reagendamento de consulta
     if form.validate_on_submit():
         consulta.data_hora = form.data_hora.data
         consulta.status = 'Reagendado'
@@ -262,16 +273,18 @@ def reagendar_consulta(id_consulta):
 
     return render_template('reagendar_consulta.html', form=form, consulta=consulta)
 
-
+# Rota para atualizar uma consulta (cancelar ou atualizar prescrição)
 @App.route('/atualizar_consulta/<int:id_consulta>', methods=['POST'])
 @login_required
 def atualizar_consulta(id_consulta):
     consulta = Consulta.query.get_or_404(id_consulta)
     action = request.form.get('action')
 
+    # Lidar com o cancelamento da consulta
     if action == 'cancelar':
         consulta.status = 'Cancelada'
         flash('Consulta cancelada com sucesso.', 'success')
+    # Lidar com a atualização da prescrição se o usuário atual for um médico
     elif action == 'atualizar' and current_user.tipo == 'Médico':
         consulta.prescricao = request.form.get('prescricao')
         flash('Prescrição atualizada com sucesso.', 'success')
@@ -283,20 +296,24 @@ def atualizar_consulta(id_consulta):
     else:
         return redirect(url_for('minhas_consultas'))
 
+# Rota para realizar uma consulta
 @App.route('/realizar_consulta/<int:id_consulta>', methods=['GET', 'POST'])
 @login_required
 def realizar_consulta(id_consulta):
+    # Verificar se o usuário atual é um médico
     if current_user.tipo != 'Médico':
         flash('Acesso não autorizado.', 'danger')
         return redirect(url_for('perfil', id_usuario=current_user.id))
 
     consulta = Consulta.query.get_or_404(id_consulta)
+    # Verificar se o usuário atual está autorizado a realizar a consulta
     if consulta.id_profissional != current_user.id:
         flash('Você não tem permissão para realizar esta consulta.', 'danger')
         return redirect(url_for('consultas_agendadas'))
 
     form = Form_Realizar_Consulta()
 
+    # Lidar com a submissão do formulário de realização de consulta
     if form.validate_on_submit():
         prontuario = Prontuario(
             id_paciente=consulta.id_paciente,

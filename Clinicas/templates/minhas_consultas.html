@@ -19,12 +19,12 @@
             <p><strong>Prescrição:</strong> {{ consulta.prescricao }}</p>
             {% endif %}
             <div class="consulta-actions">
-                {% if consulta.status != 'Cancelada' and consulta.status != 'Concluído' and consulta.data_hora > now() %}
+                {% if consulta.status != 'Cancelada' and consulta.status != 'Concluído' and (consulta.data_hora > now() or consulta.status == 'Reagendado') %}
                 <form method="POST" action="{{ url_for('atualizar_consulta', id_consulta=consulta.id) }}">
                     <button type="submit" name="action" value="cancelar" class="custom-submit-button cancel-button" onclick="return confirm('Tem certeza que deseja cancelar esta consulta?');">Cancelar Consulta</button>
                 </form>
                 {% endif %}
-                {% if consulta.status != 'Cancelada' and consulta.status != 'Concluído' and consulta.data_hora > now() %}
+                {% if consulta.status != 'Cancelada' and consulta.status != 'Concluído' and (consulta.data_hora > now() or consulta.status == 'Reagendado') %}
                 <a href="{{ url_for('reagendar_consulta', id_consulta=consulta.id) }}" class="custom-submit-button reschedule-button">Reagendar Consulta</a>
                 {% endif %}
             </div>

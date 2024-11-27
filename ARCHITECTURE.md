@@ -91,10 +91,13 @@ MedicalBooking/
 │   │   ├── base.html
 │   │   ├── consultas_agendadas.html
 │   │   ├── criar_conta.html
+│   │   ├── editar_conta.html
 │   │   ├── homepage.html
 │   │   ├── minhas_consultas.html
 │   │   ├── perfil.html
 │   │   ├── prontuario.html
+│   │   ├── reagendar_consulta.html
+│   │   ├── realizar_consulta.html
 │   ├── __init__.py
 │   ├── forms.py
 │   ├── models.py
